@@ -63,7 +63,38 @@ class blah {
   - private methods
   - private static methods
 
+#####Module System
+- Packages are containers for classes and interfaces, Modules are containers for packages
+- Module names need to be unique and typically use the reverse domain name syntax (like packages)
+- e.g. `module com.paulhoang.mymodule {}`
+- Modules also need to declare what are its dependencies and what it exports
+```java
+module com.paulhoang.mymodule {
+  requires com.paulhoang.sharedmodule;
+  
+  exports com.paulhoang.mymodule.api;
+}
+```
+- The Base module is the basic module that exports all the basic packages that the JDK provides
+  - This includes packages for io, lang, maths, time, utils, concurrency etc
+  - It doesn't require any other module, only exports the fundamental apis required for dev
+  - Its not required to explicitly add the base module as a dependency as its always implicitly added
+- Module declarations are done in the module-info.java file which lives in the root folder of the module (this file is compiled to a class file)
+- The module system allowed for changes to the JDK as well as the JRE
+  - previously, the JDK and JRE distributions were very different
+  - The JDK included the JRE, native code, the binaries, tools, samples, demos, documentation
+  - Now, the 2 are effectively the same, the JRE is a very stripped down version of the JDK
+- New step `Link Time` is a new optional step between compile time and runtime
+  - Used by jlink to link compiled modules together to make smaller runtime images
+  - before jlink, applications would be packaged up with all libraries then another step would be used to remove things
+  - e.g. `jlink <options> ---module-path <modulepath> --output <path>`
 
+#####Module System - Migration
+- One possible issue in using J9 modules are applications that have direct access to the JRE, internal APIs, internal libraries etc, jar URLs, effectively modules that have been marked as unsafe
+  - you can use the `jdeps` tool. it helps in finding if an app has any dependencies on any internal API's
+  - access to the $JavaHome/lib directory shouldn't be used
+  - `jar:file` is the prefix for jar url that locates files within a jar file - thats now been deprecated. Should now use `jrt` schema `jrt:[module[/path]]`
+- 
 
 ###Java 10
 
